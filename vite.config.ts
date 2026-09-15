@@ -7,6 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
+      // PaddleOCR + ONNX Runtime are loaded at runtime from CDN via dynamic import.
+      // This keeps dist/ under Cloudflare's 25 MiB per-asset limit.
+      external: [
+        '@paddleocr/paddleocr-js',
+        'onnxruntime-web',
+        /\.wasm$/,
+      ],
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) {
@@ -27,4 +34,3 @@ export default defineConfig({
     },
   },
 })
-

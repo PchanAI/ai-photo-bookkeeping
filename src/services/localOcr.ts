@@ -1,30 +1,43 @@
-import { PaddleOCR } from '@paddleocr/paddleocr-js';
 import type { GeminiScanResult } from './gemini';
+
+// PaddleOCR + ONNX Runtime are loaded at runtime from jsDelivr via dynamic import.
+// This keeps the Vite bundle small (under Cloudflare's 25 MiB per-asset limit).
+// The PaddleOCR engine fetches its own WASM binaries from the same CDN at init time.
 
 let ocrInstance: any = null;
 
+const PADDLEOCR_CDN = 'https://cdn.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/dist/paddleocr.js';
+const ONNX_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/';
+
+async function loadPaddleOCR(): Promise<any> {
+  // Dynamically import PaddleOCR from CDN so the main bundle stays small.
+  const module = await import(/* @vite-ignore */ PADDLEOCR_CDN);
+  return module.default?.PaddleOCR ?? module.PaddleOCR;
+}
+
 /**
  * Initialize the local PaddleOCR engine using ONNX Runtime Web.
- * Downloads the lightweight model files (approx 15MB) from CDN on first request.
+ * All WASM & model files are fetched from the jsDelivr CDN at runtime.
  */
 export async function initLocalOcr(onProgress?: (progressText: string) => void): Promise<any> {
   if (ocrInstance) return ocrInstance;
 
   if (onProgress) onProgress('正在初始化 ONNX Runtime 運算晶片 & 下載輕量化 OCR 模型 (約 15MB)，請稍候...');
-  
+
   try {
+    const PaddleOCR = await loadPaddleOCR();
     ocrInstance = await PaddleOCR.create({
       lang: 'ch',
       ocrVersion: 'PP-OCRv5',
       worker: false, // Run in main thread to bypass CORS and Web Worker bundler issues in dev server
       ortOptions: {
         backend: 'wasm',
-        wasmPaths: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/',
+        wasmPaths: ONNX_CDN,
         numThreads: 1, // Must be 1 unless crossOriginIsolated headers are enabled on the server
-        simd: true
-      }
+        simd: true,
+      },
     });
-    
+
     if (onProgress) onProgress('本地辨識引擎載入成功！');
     return ocrInstance;
   } catch (err) {
@@ -42,22 +55,22 @@ export async function scanReceiptLocally(
   onProgress?: (progressText: string) => void
 ): Promise<GeminiScanResult> {
   const ocr = await initLocalOcr(onProgress);
-  
+
   if (onProgress) onProgress('本地引擎正在掃描並識別單據影像文字...');
-  
+
   // Convert base64 data URL to Blob to support PaddleOCR image source requirement
   const response = await fetch(base64Image);
   const blob = await response.blob();
-  
+
   // Predict returns array of { text, confidence, box }
   const predictions = await ocr.predict(blob);
-  
+
   if (!predictions || predictions.length === 0) {
     throw new Error('本地辨識未偵測到任何單據文字，請確保單據拍攝清晰且光源充足。');
   }
-  
+
   if (onProgress) onProgress('正在對識別文字進行智慧關聯與欄位提取...');
-  
+
   // Flatten all items from all results into a single text array
   const allTexts = predictions.flatMap((r: any) => (r.items || []).map((i: any) => i.text));
   return parseLocalOcrResults(allTexts);
@@ -68,7 +81,6 @@ export async function scanReceiptLocally(
  * Acts as a local frontend rule-based parser mapping items, merchant, dates, total cost, and categories.
  */
 export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
-  
   let merchant = '本地辨識商家';
   let date = new Date().toISOString().split('T')[0];
   let originalTotalAmount = 0;
@@ -95,7 +107,7 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
       let year = parseInt(match[1]);
       const month = match[2].padStart(2, '0');
       const day = match[3].padStart(2, '0');
-      
+
       // Handle Taiwan ROC year (e.g. 115 -> 2026)
       if (year < 1000) {
         year += 1911;
@@ -116,7 +128,7 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
     if (match) {
       const price = parseInt(match[1]);
       numbers.push(price);
-      
+
       // If it's a potential item line, e.g. contains text and a price
       let name = text.replace(match[0], '').trim();
       // Strip residual quantity tokens like "數量1" / "数量 2" that OCR leaves in the name
@@ -132,7 +144,7 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
           originalUnitPrice: price,
           convertedUnitPriceTWD: price,
           originalTotalPrice: price,
-          convertedTotalPriceTWD: price
+          convertedTotalPriceTWD: price,
         };
         items.push(item);
       }
@@ -159,7 +171,7 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
   // Fallback: If no total found from keywords, use the largest number found in the receipt (excluding dates)
   if (originalTotalAmount === 0 && numbers.length > 0) {
     // Filter out date numbers or extremely large outlier numbers (like invoice numbers)
-    const validAmounts = numbers.filter(n => n < 100000); // assume total is < 100,000
+    const validAmounts = numbers.filter((n) => n < 100000); // assume total is < 100,000
     if (validAmounts.length > 0) {
       originalTotalAmount = Math.max(...validAmounts);
     }
@@ -223,7 +235,7 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
       originalUnitPrice: originalTotalAmount,
       convertedUnitPriceTWD: originalTotalAmount,
       originalTotalPrice: originalTotalAmount,
-      convertedTotalPriceTWD: originalTotalAmount
+      convertedTotalPriceTWD: originalTotalAmount,
     });
   }
 
@@ -238,6 +250,6 @@ export function parseLocalOcrResults(lines: string[]): GeminiScanResult {
     convertedTotalAmountTWD: originalTotalAmount,
     category,
     paymentMethod,
-    items
+    items,
   };
 }
