@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "財政部發票全民稽核自動帶入助手",
+  "version": "1.0",
+  "description": "自動從網址參數將發票號碼、日期與隨機碼帶入整合服務平台的查詢網頁，您只需輸入圖形驗證碼即可查詢。",
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.einvoice.nat.gov.tw/portal/btc/audit/btc601w/search*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

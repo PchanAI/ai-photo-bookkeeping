@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c5ce7"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#ede6ff;stop-opacity:0.95"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="192" height="192" fill="url(#bg)" rx="42"/>
+  
+  <!-- Camera frame -->
+  <rect x="38" y="42" width="116" height="88" rx="10" fill="none" stroke="url(#accent)" stroke-width="4" opacity="0.9"/>
+  
+  <!-- Camera lens -->
+  <circle cx="96" cy="86" r="20" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.9"/>
+  <circle cx="96" cy="86" r="10" fill="url(#accent)" opacity="0.3"/>
+  <circle cx="96" cy="86" r="4" fill="url(#accent)" opacity="0.8"/>
+  
+  <!-- Receipt -->
+  <g transform="translate(72, 110)">
+    <rect x="0" y="0" width="72" height="76" rx="6" fill="url(#accent)" opacity="0.95"/>
+    <path d="M0 6 L0 0 L72 0 L72 6 L66 2 L60 6 L54 2 L48 6 L42 2 L36 6 L30 2 L24 6 L18 2 L12 6 L6 2 L0 6 Z" fill="url(#accent)" opacity="0.95"/>
+    <rect x="10" y="16" width="52" height="4" rx="2" fill="#6c5ce7" opacity="0.6"/>
+    <rect x="10" y="28" width="38" height="4" rx="2" fill="#6c5ce7" opacity="0.4"/>
+    <rect x="10" y="40" width="44" height="4" rx="2" fill="#6c5ce7" opacity="0.4"/>
+    <rect x="10" y="54" width="28" height="8" rx="4" fill="#6c5ce7" opacity="0.7"/>
+    <rect x="16" y="57" width="16" height="3" rx="1.5" fill="white" opacity="0.9"/>
+  </g>
+  
+  <!-- Scan line -->
+  <g opacity="0.7">
+    <line x1="30" y1="72" x2="162" y2="72" stroke="white" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <polygon points="26,69 34,72 26,75" fill="white"/>
+  </g>
+  
+  <!-- Sparkle dots -->
+  <circle cx="52" cy="56" r="3" fill="white" opacity="0.8"/>
+  <circle cx="150" cy="60" r="2" fill="white" opacity="0.6"/>
+  <circle cx="144" cy="152" r="2.5" fill="white" opacity="0.7"/>
+  <circle cx="56" cy="156" r="1.5" fill="white" opacity="0.5"/>
+</svg>

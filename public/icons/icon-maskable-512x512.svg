@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c5ce7"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#ede6ff;stop-opacity:0.95"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  
+  <!-- Camera frame (outer) -->
+  <rect x="106" y="120" width="300" height="230" rx="24" fill="none" stroke="url(#accent)" stroke-width="10" opacity="0.9"/>
+  
+  <!-- Camera lens circle -->
+  <circle cx="256" cy="235" r="55" fill="none" stroke="url(#accent)" stroke-width="8" opacity="0.9"/>
+  <circle cx="256" cy="235" r="28" fill="url(#accent)" opacity="0.3"/>
+  <circle cx="256" cy="235" r="12" fill="url(#accent)" opacity="0.8"/>
+  
+  <!-- Receipt / bill shape (bottom right, overlapping camera) -->
+  <g transform="translate(200, 280)">
+    <!-- Receipt body -->
+    <rect x="0" y="0" width="160" height="180" rx="12" fill="url(#accent)" opacity="0.95"/>
+    
+    <!-- Receipt zigzag top edge -->
+    <path d="M0 12 L0 0 L160 0 L160 12 L150 4 L140 12 L130 4 L120 12 L110 4 L100 12 L90 4 L80 12 L70 4 L60 12 L50 4 L40 12 L30 4 L20 12 L10 4 L0 12 Z" fill="url(#accent)" opacity="0.95"/>
+    
+    <!-- Receipt text lines -->
+    <rect x="24" y="30" width="112" height="8" rx="4" fill="#6c5ce7" opacity="0.6"/>
+    <rect x="24" y="52" width="80" height="8" rx="4" fill="#6c5ce7" opacity="0.4"/>
+    <rect x="24" y="74" width="96" height="8" rx="4" fill="#6c5ce7" opacity="0.4"/>
+    <rect x="24" y="96" width="64" height="8" rx="4" fill="#6c5ce7" opacity="0.4"/>
+    
+    <!-- Receipt amount highlight -->
+    <rect x="24" y="128" width="56" height="16" rx="8" fill="#6c5ce7" opacity="0.7"/>
+    <rect x="34" y="133" width="36" height="6" rx="3" fill="white" opacity="0.9"/>
+    
+    <!-- Receipt total line -->
+    <line x1="24" y1="160" x2="136" y2="160" stroke="#6c5ce7" stroke-width="2" opacity="0.3"/>
+    <rect x="24" y="168" width="48" height="6" rx="3" fill="#6c5ce7" opacity="0.3"/>
+  </g>
+  
+  <!-- AI scan line (horizontal dashed line crossing receipt) -->
+  <g opacity="0.7">
+    <line x1="140" y1="200" x2="380" y2="200" stroke="white" stroke-width="2" stroke-dasharray="8 6"/>
+    <polygon points="130,194 144,200 130,206" fill="white"/>
+  </g>
+  
+  <!-- Small sparkle/AI dots -->
+  <circle cx="140" cy="155" r="6" fill="white" opacity="0.8"/>
+  <circle cx="370" cy="165" r="4" fill="white" opacity="0.6"/>
+  <circle cx="360" cy="350" r="5" fill="white" opacity="0.7"/>
+  <circle cx="160" cy="370" r="3" fill="white" opacity="0.5"/>
+</svg>
