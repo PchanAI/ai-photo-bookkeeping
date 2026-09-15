@@ -1,3 +1,0 @@
-# Cloudflare Pages SPA fallback: send unknown paths to the app shell
-# The trailing - means "return the file contents, not a redirect"
-/*    /index.html   200
